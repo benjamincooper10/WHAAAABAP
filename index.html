@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Button</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #audioButton {
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+        }
+        #audioButton:hover {
+            opacity: 0.8;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Click the image to play sound</h1>
+    <button id="audioButton">
+        <!-- Replace with your image filename once uploaded -->
+        <img src="screenshot.png" alt="Clickable screenshot" style="max-width: 300px; height: auto;">
+    </button>
+    <audio id="mySound" preload="auto">
+        <!-- Replace with your WAV filename once uploaded -->
+        <source src="sound.wav" type="audio/wav">
+    </audio>
+    <script>
+        document.getElementById('audioButton').addEventListener('click', function() {
+            document.getElementById('mySound').play().catch(function(error) {
+                console.log('Autoplay prevented:', error);
+            });
+        });
+    </script>
+</body>
+</html>
+Add index.html
+
+
+
+
+
+
