@@ -113,7 +113,7 @@
             <div>My Clicks</div>
         </div>
         <div>
-            <span class="stat-number" id="totalClicks">1,234</span>
+            <span class="stat-number" id="totalClicks">0</span>
             <div>Total Clicks</div>
         </div>
     </div>
@@ -124,9 +124,9 @@
         <source src="goro_attack1.mp3" type="audio/mpeg">
     </audio>
    <script>
-    // Load saved counters (persists forever)
+    // FIXED: Load saved counters OR start at 0
     let myClicks = parseInt(localStorage.getItem('goroMyClicks') || '0');
-    let totalClicks = parseInt(localStorage.getItem('goroTotalClicks') || '1234');
+    let totalClicks = parseInt(localStorage.getItem('goroTotalClicks') || '0'); // STARTS AT 0
     const myClicksEl = document.getElementById('myClicks');
     const totalClicksEl = document.getElementById('totalClicks');
     const clickButton = document.getElementById('clickButton');
@@ -134,11 +134,14 @@
     const unmuteBtn = document.getElementById('unmute');
     const goroImg = document.getElementById('goroImg');
     // Update display on load
-    myClicksEl.textContent = myClicks.toLocaleString();
-    totalClicksEl.textContent = totalClicks.toLocaleString();
+    function updateDisplay() {
+        myClicksEl.textContent = myClicks.toLocaleString();
+        totalClicksEl.textContent = totalClicks.toLocaleString();
+    }
+    updateDisplay();
     // Audio unlock
     unmuteBtn.addEventListener('click', () => {
-        goroSound.volume = 0.3;
+        goroSound.volume = 0.1; // Start quiet
         goroSound.play().then(() => {
             goroSound.pause();
             unmuteBtn.style.display = 'none';
@@ -147,7 +150,7 @@
     // Create goro2.jpg burst - ALWAYS VISIBLE
     function createGoroBurst() {
         const burst = document.createElement('img');
-        burst.src = 'goro2.jpg';
+        burst.src = 'goro_2.png';
         burst.className = 'goroBurst';
         const imgSize = 80;
         const padding = 20;
@@ -162,15 +165,14 @@
             if (burst.parentNode) burst.parentNode.removeChild(burst);
         }, 1000);
     }
-    // Main click handler - SAVES INSTANTLY
+    // Main click handler - TRUE PROGRESSIVE LOUDNESS
     clickButton.addEventListener('click', (e) => {
         myClicks++;
         totalClicks++;
         // INSTANT save + display
-        localStorage.setItem('goroMyClicks', myClicks);
-        localStorage.setItem('goroTotalClicks', totalClicks);
-        myClicksEl.textContent = myClicks.toLocaleString();
-        totalClicksEl.textContent = totalClicks.toLocaleString();
+        localStorage.setItem('goroMyClicks', myClicks.toString());
+        localStorage.setItem('goroTotalClicks', totalClicks.toString());
+        updateDisplay();
         // Visual feedback
         clickButton.style.transform = 'scale(0.95)';
         goroImg.style.filter = 'brightness(1.5)';
@@ -179,17 +181,18 @@
             clickButton.style.transform = 'scale(1)';
             goroImg.style.filter = 'brightness(1)';
         }, 100);
-        // Progressive sound
-        if (goroSound.duration > 0) {
+        // FIXED: Progressive LOUDER sound per click
+        if (goroSound.duration > 0 && !unmuteBtn.style.display) {
+            const volume = Math.min(0.1 + (myClicks * 0.015), 1.0); // 1.5% LOUDER per click
+            goroSound.volume = volume;
             goroSound.currentTime = 0;
-            goroSound.volume = Math.min(0.3 + (myClicks * 0.001), 0.8);
             goroSound.play().catch(() => {});
         }
     });
     // Save on page unload (backup)
     window.addEventListener('beforeunload', () => {
-        localStorage.setItem('goroMyClicks', myClicks);
-        localStorage.setItem('goroTotalClicks', totalClicks);
+        localStorage.setItem('goroMyClicks', myClicks.toString());
+        localStorage.setItem('goroTotalClicks', totalClicks.toString());
     });
     // Prevent zoom on mobile
     document.addEventListener('touchstart', (e) => {
@@ -202,5 +205,6 @@
         lastTouchEnd = now;
     }, { passive: false });
 </script>
+
 </body>
 </html>
