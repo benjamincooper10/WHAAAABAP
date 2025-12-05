@@ -64,18 +64,96 @@
     <audio id="mySound" preload="auto">
         <source src="goro_attack1.wav" type="audio/wav">
     </audio>
-    <script>
-        const button = document.getElementById('audioButton');
-        const audio = document.getElementById('mySound');
-        button.addEventListener('click', function() {
-            // Force animation restart
-            button.classList.remove('explode');
-            void button.offsetWidth; // Trigger reflow
-            button.classList.add('explode');
-            audio.currentTime = 0; // Restart sound
-            audio.play().catch(e => console.log('Audio error:', e));
+   <script>
+    const button = document.getElementById('audioButton');
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = document.getElementById('targetImg');
+    const audio = document.getElementById('mySound');
+    let particles = [];
+    let clickCount = 0;
+    let maxVolume = 0.1; // Starts quiet, ramps to 1.0
+    // Resize canvas
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.vx = (Math.random() - 0.5) * 25; // Faster burst
+            this.vy = (Math.random() - 0.5) * 25;
+            this.vx2 = (Math.random() - 0.5) * 10;
+            this.vy2 = (Math.random() - 0.5) * 10;
+            this.size = Math.random() * 8 + 3;
+            this.color = `hsl(${Math.random()*360}, 80%, ${50 + clickCount*5}%)`; // Brighter with clicks
+            this.life = 1;
+            this.decay = Math.random() * 0.015 + 0.008;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vx *= 0.97;
+            this.vy *= 0.97;
+            this.vx += this.vx2 * 0.08;
+            this.vy += this.vy2 * 0.08;
+            this.life -= this.decay;
+            this.size *= 0.995;
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.life;
+            ctx.fillStyle = this.color;
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+    button.addEventListener('click', function(e) {
+        const rect = img.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        // Ramp volume + particles
+        clickCount++;
+        maxVolume = Math.min(0.1 + (clickCount * 0.08), 1.0); // 10% louder per click
+        audio.volume = maxVolume;
+        // More particles as it gets louder
+        const particleCount = 40 + Math.floor(clickCount * 3);
+        for(let i = 0; i < particleCount; i++) {
+            particles.push(new Particle(x, y));
+        }
+        // Flash image
+        img.style.transform = 'scale(1.1)';
+        img.style.opacity = '0.7';
+        setTimeout(() => {
+            img.style.transform = 'scale(1)';
+            img.style.opacity = '1';
+        }, 150);
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log('Audio error:', e));
+        animate();
+    });
+    // Reset volume when sound ends
+    audio.addEventListener('ended', function() {
+        clickCount = 0;
+        maxVolume = 0.1;
+    });
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles = particles.filter(p => {
+            p.update();
+            p.draw();
+            return p.life > 0;
         });
-    </script>
+        if(particles.length > 0) requestAnimationFrame(animate);
+    }
+</script>
 </body>
 </html>
 
