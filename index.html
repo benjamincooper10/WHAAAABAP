@@ -219,6 +219,19 @@
             totalClicksEl.textContent = totalClicks.toLocaleString();
         }
         updateDisplay();
+        // Update weapon health bar
+        function updateWeaponHealth() {
+            const healthBar = document.getElementById('weaponBar');
+            const healthFill = document.getElementById('healthFill');
+            
+            healthBar.style.display = 'block';
+            const percent = Math.max(0, (weaponHealth / 30) * 100);
+            healthFill.style.width = percent + '%';
+            
+            if (percent < 30) {
+                healthFill.style.background = '#ff4444';
+            }
+        }
         unmuteBtn.addEventListener('click', () => {
             goroSound.volume = 0.1;
             goroSound.play().then(() => {
