@@ -124,53 +124,31 @@
     </audio>
 
     <script>
-        let myClicks = 0;
-        let totalClicks = 0;
-        let audioUnlocked = false;
+        let myClicks = parseInt(localStorage.getItem('goroMyClicks') || '0');
+        let totalClicks = parseInt(localStorage.getItem('goroTotalClicks') || '0');
         
-        // Get elements SAFELY
-        function getElements() {
-            return {
-                myClicksEl: document.getElementById('myClicks'),
-                totalClicksEl: document.getElementById('totalClicks'),
-                clickButton: document.getElementById('clickButton'),
-                goroSound: document.getElementById('goroSound'),
-                unmuteBtn: document.getElementById('unmute')
-            };
-        }
+        const myClicksEl = document.getElementById('myClicks');
+        const totalClicksEl = document.getElementById('totalClicks');
+        const clickButton = document.getElementById('clickButton');
+        const goroSound = document.getElementById('goroSound');
+        const unmuteBtn = document.getElementById('unmute');
         
-        // Load saved myClicks
-        const savedMyClicks = localStorage.getItem('goroMyClicks');
-        if (savedMyClicks) {
-            myClicks = parseInt(savedMyClicks) || 0;
-        }
-        
-        // Update display SAFELY
         function updateDisplay() {
-            const els = getElements();
-            if (els.myClicksEl) els.myClicksEl.textContent = myClicks.toLocaleString();
-            if (els.totalClicksEl) els.totalClicksEl.textContent = totalClicks.toLocaleString();
+            myClicksEl.textContent = myClicks.toLocaleString();
+            totalClicksEl.textContent = totalClicks.toLocaleString();
         }
-        
-        // Initial display
         updateDisplay();
         
-        // Unmute
-        const els = getElements();
-        if (els.unmuteBtn) {
-            els.unmuteBtn.addEventListener('click', () => {
-                if (els.goroSound) {
-                    els.goroSound.volume = 0.1;
-                    els.goroSound.play().then(() => {
-                        els.goroSound.pause();
-                        els.unmuteBtn.style.display = 'none';
-                        audioUnlocked = true;
-                    }).catch(() => {});
-                }
-            });
-        }
+        let audioUnlocked = false;
+        unmuteBtn.addEventListener('click', () => {
+            goroSound.volume = 0.1;
+            goroSound.play().then(() => {
+                goroSound.pause();
+                unmuteBtn.style.display = 'none';
+                audioUnlocked = true;
+            }).catch(() => {});
+        });
         
-        // Burst effect
         function createGoroBurst() {
             const burst = document.createElement('img');
             burst.src = 'Goro_2.png';
@@ -178,8 +156,8 @@
             
             const imgSize = window.innerWidth < 480 ? 80 : 100;
             const padding = 30;
-            const maxX = Math.max(0, window.innerWidth - imgSize - padding);
-            const maxY = Math.max(0, window.innerHeight - imgSize - padding);
+            const maxX = window.innerWidth - imgSize - padding;
+            const maxY = window.innerHeight - imgSize - padding;
             const x = Math.random() * maxX;
             const y = Math.random() * maxY;
             
@@ -188,30 +166,31 @@
             document.body.appendChild(burst);
             
             setTimeout(() => {
-                if (burst.parentNode) {
-                    burst.parentNode.removeChild(burst);
-                }
+                if (burst.parentNode) burst.parentNode.removeChild(burst);
             }, 1200);
         }
         
-        // Click handler
-        if (els.clickButton) {
-            els.clickButton.addEventListener('click', () => {
-                myClicks++;
-                totalClicks++; // GLOBAL COUNTER
-                
-                localStorage.setItem('goroMyClicks', myClicks.toString());
-                updateDisplay();
-                createGoroBurst();
-                
-                if (audioUnlocked && els.goroSound && els.goroSound.duration > 0) {
-                    const volume = Math.min(0.1 + (myClicks * 0.015), 1.0);
-                    els.goroSound.volume = volume;
-                    els.goroSound.currentTime = 0;
-                    els.goroSound.play().catch(() => {});
-                }
-            });
-        }
+        clickButton.addEventListener('click', () => {
+            myClicks++;
+            totalClicks++;
+            localStorage.setItem('goroMyClicks', myClicks.toString());
+            localStorage.setItem('goroTotalClicks', totalClicks.toString());
+            updateDisplay();
+            
+            createGoroBurst();
+            
+            if (audioUnlocked && goroSound.duration > 0) {
+                const volume = Math.min(0.1 + (myClicks * 0.015), 1.0);
+                goroSound.volume = volume;
+                goroSound.currentTime = 0;
+                goroSound.play().catch(() => {});
+            }
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('goroMyClicks', myClicks.toString());
+            localStorage.setItem('goroTotalClicks', totalClicks.toString());
+        });
     </script>
 </body>
 </html>
