@@ -163,9 +163,8 @@
         
 function createGoroBurst() {
     const burst = document.createElement('img');
-    burst.src = 'Goro_2.png'; // ✅ Goro_2.png bursts too
+    burst.src = 'goro_2.png?v=' + Date.now(); // ✅ Forces fresh load
     burst.className = 'goroBurst';
-    burst.onerror = () => console.log('❌ Goro_2.png NOT FOUND');
     
     const imgSize = 100;
     const padding = 30;
