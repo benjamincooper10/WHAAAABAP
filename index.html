@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goro Click</title>
+    <title>Goro Attacks!</title>
     <style>
 { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -19,6 +19,7 @@
             align-items: center;
             justify-content: center;
             gap: 2rem;
+            position: relative;
         }
         #clickButton {
             width: 200px; height: 200px;
@@ -70,10 +71,37 @@
             cursor: pointer;
             z-index: 100;
         }
+        /* goro2.jpg Shadow Bursts */
+        .goroBurst {
+            position: fixed;
+            width: 80px; height: 80px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)) brightness(0.7);
+            animation: burstFade 1s ease-out forwards;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        @keyframes burstFade {
+            0% {
+                opacity: 0.8;
+                transform: scale(0.3) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1) rotate(180deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.1) rotate(360deg);
+            }
+        }
         @media (max-width: 480px) {
             .stats { gap: 1rem; font-size: 1.2rem; }
             .stat-number { font-size: 2rem; }
             #clickButton { width: 160px; height: 160px; }
+            .goroBurst { width: 60px; height: 60px; }
         }
     </style>
 </head>
@@ -97,7 +125,7 @@
     </audio>
     <script>
         let myClicks = 0;
-        let totalClicks = 1234; // Starting number like lizard.click
+        let totalClicks = 1234;
         const myClicksEl = document.getElementById('myClicks');
         const totalClicksEl = document.getElementById('totalClicks');
         const clickButton = document.getElementById('clickButton');
@@ -112,21 +140,45 @@
                 unmuteBtn.style.display = 'none';
             }).catch(() => {});
         });
-        // Main click handler - ULTRA SNAPPY
+        // Create goro2.jpg burst
+        function createGoroBurst() {
+            const burst = document.createElement('img');
+            burst.src = 'goro2.jpg';
+            burst.className = 'goroBurst';
+            // Random position (screen edges)
+            const side = Math.floor(Math.random() * 4);
+            let x, y;
+            switch(side) {
+                case 0: x = Math.random() * window.innerWidth; y = -50; break; // Top
+                case 1: x = window.innerWidth + 50; y = Math.random() * window.innerHeight; break; // Right
+                case 2: x = Math.random() * window.innerWidth; y = window.innerHeight + 50; break; // Bottom
+                case 3: x = -50; y = Math.random() * window.innerHeight; break; // Left
+            }
+            burst.style.left = x + 'px';
+            burst.style.top = y + 'px';
+            document.body.appendChild(burst);
+            // Auto-remove after animation
+            setTimeout(() => {
+                if (burst.parentNode) burst.parentNode.removeChild(burst);
+            }, 1000);
+        }
+        // Main click handler
         clickButton.addEventListener('click', (e) => {
             myClicks++;
             totalClicks++;
-            // Instant UI updates (60fps smooth)
+            // Instant UI updates
             myClicksEl.textContent = myClicks.toLocaleString();
             totalClicksEl.textContent = totalClicks.toLocaleString();
             // Visual feedback
             clickButton.style.transform = 'scale(0.95)';
             goroImg.style.filter = 'brightness(1.5)';
+            // goro2.jpg RANDOM SHADOW BURST
+            createGoroBurst();
             setTimeout(() => {
                 clickButton.style.transform = 'scale(1)';
                 goroImg.style.filter = 'brightness(1)';
             }, 100);
-            // Sound (unlocked or quiet first play)
+            // Progressive sound
             if (goroSound.duration > 0) {
                 goroSound.currentTime = 0;
                 goroSound.volume = Math.min(0.3 + (myClicks * 0.001), 0.8);
