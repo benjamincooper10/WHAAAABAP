@@ -164,9 +164,9 @@
         
         function createGoroBurst() {
             const burst = document.createElement('img');
-            burst.src = 'goro_2.png';
+            burst.src = 'Goro_2.png';
             burst.className = 'goroBurst';
-            burst.onerror = () => console.log('❌ goro_2.png NOT FOUND');
+            burst.onerror = () => console.log('❌ Goro_2.png NOT FOUND');
             
             const imgSize = 100;
             const padding = 30;
@@ -179,7 +179,7 @@
             burst.style.top = y + 'px';
             document.body.appendChild(burst);
             
-            console.log('✅ goro_2.png burst created at', x, y);
+            console.log('✅ Goro_2.png burst created at', x, y);
             
             setTimeout(() => {
                 if (burst.parentNode) burst.parentNode.removeChild(burst);
