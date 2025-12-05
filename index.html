@@ -99,6 +99,16 @@
             #clickButton { width: 220px !important; height: 220px !important; }
             .goroBurst { width: 80px !important; height: 80px !important; }
         }
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+            z-index: 10;
+}
     </style>
 </head>
 <body>
@@ -207,5 +217,6 @@
             localStorage.setItem('goroTotalClicks', Math.floor(totalClicks).toString());
         });
     </script>
+    <div class="footer">Made by an idiot Product Owner and his AI. Mostly AI.</div>
 </body>
 </html>
