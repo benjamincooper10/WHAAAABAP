@@ -171,7 +171,7 @@
         let repairPowderY = 0;
         let repairPowderVX = 0;
         let repairPowderVY = 0;
-        const powderSpeed = 2; // Medium speed
+        const powderSpeed = 5; // Medium speed
         const bounceDamping = 0.9; // Slight energy loss on bounce
 
         // SAFE LOAD: Reset corrupted localStorage
@@ -224,8 +224,8 @@
             repairPowderY = size + Math.random() * (window.innerHeight - size * 2);
             
             // Random initial velocity (medium speed)
-            repairPowderVX = (Math.random() - 0.5) * powderSpeed * 2;
-            repairPowderVY = (Math.random() - 0.5) * powderSpeed * 2;
+            repairPowderVX = (Math.random() - 0.5) * powderSpeed * 5;
+            repairPowderVY = (Math.random() - 0.5) * powderSpeed * 5;
             
             repairPowderEl.style.left = repairPowderX + 'px';
             repairPowderEl.style.top = repairPowderY + 'px';
