@@ -36,7 +36,7 @@
             transition: all 0.1s ease;
         }
         #clickButton:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
-        #clickButton:active:not(.broken) {
+        #clickButton:active {
             transform: translateY(3px) scale(0.97) !important;
             box-shadow: 0 5px 10px rgba(0,0,0,0.6);
         }
@@ -330,7 +330,7 @@
             }
             
             // Weapon BREAKS at 50 clicks (-20 health)
-            if (weaponHealth <= -20) {
+            (weaponHealth <= -20) {
                 weaponBroken = true;
                 clickButton.classList.add('broken');
                 document.getElementById('weaponWarning').innerHTML = 
