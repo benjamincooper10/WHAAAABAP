@@ -348,12 +348,13 @@
             updateDisplay();
             createGoroBurst();
             if (audioUnlocked) {
-                goroSound.duration > 0;
-                const volume = Math.min(0.1 + (myClicks * 0.015), 1.0);
-                goroSound.volume = volume;
-                goroSound.currentTime = 0;
-                goroSound.play().catch(() => {});
+            if (goroSound.duration > 0) {  // ← Added "if"
+            const volume = Math.min(0.1 + (myClicks * 0.015), 1.0);
+            goroSound.volume = volume;
+            goroSound.currentTime = 0;
+            goroSound.play().catch(() => {});
             }
+        }
         });
 
         window.addEventListener('beforeunload', () => {
